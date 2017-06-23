@@ -7,12 +7,13 @@ module Fog
         # @param topic_name [#to_s] name of topic to delete
         # @see https://cloud.google.com/pubsub/reference/rest/v1/projects.topics/delete
         def delete_topic(topic_name)
-          api_method = @pubsub.projects.topics.delete
-          parameters = {
-            "topic" => topic_name.to_s
-          }
-
-          request(api_method, parameters)
+          # api_method = @pubsub.projects.topics.delete
+          # parameters = {
+          #   "topic" => topic_name.to_s
+          # }
+          #
+          # request(api_method, parameters)
+          @pubsub.delete_topic(topic_name).to_h
         end
       end
 

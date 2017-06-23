@@ -58,7 +58,7 @@ module Fog
             encoded_messages << encoded_message
           end
 
-          service.publish_topic(name, encoded_messages).body["messageIds"]
+          service.publish_topic(name, encoded_messages).to_h["messageIds"]
         end
 
         # Save the instance (does the same thing as #create)
