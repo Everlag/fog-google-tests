@@ -75,31 +75,26 @@ class TestPubsubRequests < FogIntegrationTest
   def test_list_topics
     # Force a topic to be created just so we have at least 1 to list
     name = new_topic_name
-    @client.create_topic(new_topic_name)
+    @client.create_topic(name)
     result = @client.list_topics
 
-    assert_includes(result.topics, name)
-    # puts result.to_yaml
-    # assert_equal(200, result.status, "request should be successful")
-    # assert_includes(result[:body].keys, "topics", "resulting body should contain expected keys")
-    # assert_operator(result[:body]["topics"].size, :>, 0, "topic count should be positive")
+    contained = result.topics.any? {
+      |topic| topic.name == name
+    }
+    assert_equal(true, contained, 'known topic not contained within listed topics')
   end
 
-  # def test_delete_topic
-  #   topic_to_delete = new_topic_name
-  #   @client.create_topic(topic_to_delete)
-  #
-  #   result = @client.delete_topic(topic_to_delete)
-  #   assert_equal(200, result.status, "request should be successful")
-  # end
-  #
-  # def test_publish_topic
-  #   result = @client.publish_topic(some_topic_name, [:data => Base64.strict_encode64("some message")])
-  #
-  #   assert_equal(200, result.status, "request should be successful")
-  #   assert_includes(result[:body].keys, "messageIds", "resulting body should contain expected keys")
-  # end
-  #
+  def test_delete_topic
+    topic_to_delete = new_topic_name
+    @client.create_topic(topic_to_delete)
+
+    @client.delete_topic(topic_to_delete)
+  end
+
+  def test_publish_topic
+    @client.publish_topic(new_topic_name, [:data => Base64.strict_encode64("some message")])
+  end
+
   # def test_create_subscription
   #   push_config = {}
   #   ack_deadline_seconds = 18
