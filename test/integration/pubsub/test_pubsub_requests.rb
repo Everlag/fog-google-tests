@@ -7,27 +7,27 @@ class TestPubsubRequests < FogIntegrationTest
     @client = Fog::Google::Pubsub.new
     # Ensure any resources we create with test prefixes are removed
     Minitest.after_run do
-#      delete_test_resources
+     delete_test_resources
     end
   end
 
-  # def delete_test_resources
-  #   topics = @client.list_topics[:body]["topics"]
-  #   unless topics.nil?
-  #     topics.
-  #       map { |t| t["name"] }.
-  #       select { |t| t.start_with?(topic_resource_prefix) }.
-  #       each { |t| @client.delete_topic(t) }
-  #   end
-  #
-  #   subscriptions = @client.list_subscriptions[:body]["subscriptions"]
-  #   unless subscriptions.nil?
-  #     subscriptions.
-  #       map { |s| s["name"] }.
-  #       select { |s| s.start_with?(subscription_resource_prefix) }.
-  #       each { |s| @client.delete_subscription(s) }
-  #   end
-  # end
+  def delete_test_resources
+    result = @client.list_topics
+    unless result.topics.nil?
+      result.topics.
+          map { |t| t.name }.
+          select { |t| t.start_with?(topic_resource_prefix) }.
+          each { |t| @client.delete_topic(t) }
+    end
+
+    # subscriptions = @client.list_subscriptions[:body]["subscriptions"]
+    # unless subscriptions.nil?
+    #   subscriptions.
+    #     map { |s| s["name"] }.
+    #     select { |s| s.start_with?(subscription_resource_prefix) }.
+    #     each { |s| @client.delete_subscription(s) }
+    # end
+  end
 
   def topic_resource_prefix
     "projects/#{@client.project}/topics/fog-integration-test"
@@ -95,18 +95,18 @@ class TestPubsubRequests < FogIntegrationTest
     @client.publish_topic(new_topic_name, [:data => Base64.strict_encode64("some message")])
   end
 
-  # def test_create_subscription
-  #   push_config = {}
-  #   ack_deadline_seconds = 18
-  #
-  #   result = @client.create_subscription(new_subscription_name, some_topic_name, push_config, ack_deadline_seconds)
-  #
-  #   assert_equal(200, result.status, "request should be successful")
-  #   assert((%w{name topic pushConfig ackDeadlineSeconds} - result[:body].keys).empty?,
-  #          "resulting body should contain expected keys")
-  #   assert_equal(18, result[:body]["ackDeadlineSeconds"], "ackDeadlineSeconds should be 18")
-  # end
-  #
+  def test_create_subscription
+    push_config = {}
+    ack_deadline_seconds = 18
+
+    result = @client.create_subscription(new_subscription_name, new_topic_name, push_config, ack_deadline_seconds)
+
+    # assert_equal(200, result.status, "request should be successful")
+    # assert((%w{name topic pushConfig ackDeadlineSeconds} - result[:body].keys).empty?,
+    #        "resulting body should contain expected keys")
+    # assert_equal(18, result[:body]["ackDeadlineSeconds"], "ackDeadlineSeconds should be 18")
+  end
+
   # def test_get_subscription
   #   result = @client.get_subscription(some_subscription_name)
   #
