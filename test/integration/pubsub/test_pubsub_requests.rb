@@ -99,7 +99,7 @@ class TestPubsubRequests < FogIntegrationTest
     push_config = {}
     ack_deadline_seconds = 18
 
-    result = @client.create_subscription(new_subscription_name, new_topic_name, push_config, ack_deadline_seconds)
+    result = @client.create_subscription(new_subscription_name, some_topic_name, push_config, ack_deadline_seconds)
 
     # assert_equal(200, result.status, "request should be successful")
     # assert((%w{name topic pushConfig ackDeadlineSeconds} - result[:body].keys).empty?,
