@@ -105,24 +105,25 @@ class TestPubsubRequests < FogIntegrationTest
     assert_equal(result.name, subscription_name)
   end
 
-  # def test_get_subscription
-  #   result = @client.get_subscription(some_subscription_name)
-  #
-  #   assert_equal(200, result.status, "request should be successful")
-  #   assert(%w{name topic pushConfig ackDeadlineSeconds} - result[:body].keys,
-  #          "resulting body should contain expected keys")
-  # end
-  #
-  # def test_list_subscriptions
-  #   # Force a subscription to be created just so we have at least 1 to list
-  #   @client.create_subscription(new_subscription_name, some_topic_name)
-  #   result = @client.list_subscriptions
-  #
-  #   assert_equal(200, result.status, "request should be successful")
-  #   assert_includes(result[:body].keys, "subscriptions", "resulting body should contain expected keys")
-  #   assert_operator(result[:body]["subscriptions"].size, :>, 0, "subscription count should be positive")
-  # end
-  #
+  def test_get_subscription
+    subscription_name = some_subscription_name
+    result = @client.get_subscription(subscription_name )
+
+    assert_equal(result.name, subscription_name)
+  end
+
+  def test_list_subscriptions
+    # Force a subscription to be created just so we have at least 1 to list
+    subscription_name = new_subscription_name
+    @client.create_subscription(subscription_name , some_topic_name)
+    result = @client.list_subscriptions
+
+    contained = result.subscriptions.any? {
+        |sub| sub.name == subscription_name
+    }
+    assert_equal(true, contained, 'known subscription not contained within listed subscriptions')
+  end
+
   # def test_delete_subscription
   #   subscription_to_delete = new_subscription_name
   #   @client.create_subscription(subscription_to_delete, some_topic_name)
