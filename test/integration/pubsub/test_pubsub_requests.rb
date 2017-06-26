@@ -92,7 +92,7 @@ class TestPubsubRequests < FogIntegrationTest
   end
 
   def test_publish_topic
-    @client.publish_topic(new_topic_name, [:data => Base64.strict_encode64("some message")])
+    @client.publish_topic(some_topic_name , [:data => Base64.strict_encode64("some message")])
   end
 
   def test_create_subscription
@@ -131,21 +131,20 @@ class TestPubsubRequests < FogIntegrationTest
     result = @client.delete_subscription(subscription_to_delete)
   end
 
-  # def test_pull_subscription
-  #   subscription = new_subscription_name
-  #   @client.create_subscription(subscription, some_topic_name)
-  #   @client.publish_topic(some_topic_name, [:data => Base64.strict_encode64("some message")])
-  #
-  #   result = @client.pull_subscription(subscription)
-  #
-  #   assert_equal(200, result.status, "request should be successful")
-  #   assert_includes(result[:body].keys, "receivedMessages", "resulting body should contain expected keys")
-  #   assert_equal(1, result[:body]["receivedMessages"].size, "we should have received a message")
-  #   assert_equal("some message",
-  #                Base64.strict_decode64(result[:body]["receivedMessages"][0]["message"]["data"]),
-  #                "received message should be the same as what we sent")
-  # end
-  #
+  def test_pull_subscription
+    subscription_name = new_subscription_name
+    message_bytes= Base64.strict_encode64("some message")
+    @client.create_subscription(subscription_name, some_topic_name)
+    @client.publish_topic(some_topic_name, [:data => message_bytes])
+
+    result = @client.pull_subscription(subscription_name)
+
+    contained = result.received_messages.any? {
+        |received| received.message.data== message_bytes
+    }
+    assert_equal(true, contained, 'sent messsage not contained within pulled responses')
+  end
+
   # def test_acknowledge_subscription
   #   subscription = new_subscription_name
   #   @client.create_subscription(subscription, some_topic_name)

@@ -10,7 +10,11 @@ module Fog
         #   must be base64 encoded.
         # @see https://cloud.google.com/pubsub/reference/rest/v1/projects.topics/publish
         def publish_topic(topic, messages)
-          @pubsub.create_topic(topic, messages) do |_, err|
+          publish_request = ::Google::Apis::PubsubV1::PublishRequest.new(
+              :messages => messages,
+          )
+
+          @pubsub.publish_topic(topic, publish_request) do |_, err|
             unless err.nil?
               raise Fog::Errors::Error.new(err.message)
             end
@@ -20,34 +24,7 @@ module Fog
 
       class Mock
         def publish_topic(topic, messages)
-          if data[:topics].key?(topic)
-            published_messages = messages.map do |msg|
-              msg.merge("messageId" => Fog::Mock.random_letters(16), "publishTime" => Time.now.iso8601)
-            end
-
-            # Gather the subscriptions and publish
-            data[:subscriptions].values.each do |sub|
-              next unless sub["topic"] == topic
-              sub[:messages] += published_messages
-            end
-
-            body = {
-              "messageIds" => published_messages.map { |msg| msg["messageId"] }
-            }
-            status = 200
-          else
-            topic_resource = topic_name.split("/")[-1]
-            body = {
-              "error" => {
-                "code"    => 404,
-                "message" => "Resource not found (resource=#{topic_resource}).",
-                "status"  => "NOT_FOUND"
-              }
-            }
-            status = 404
-          end
-
-          build_excon_response(body, status)
+          raise Fog::Errors::MockNotImplemented
         end
       end
     end
