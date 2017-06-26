@@ -20,7 +20,7 @@ class TestPubsubRequests < FogIntegrationTest
             map { |t| t.name }.
             select { |t| t.start_with?(topic_resource_prefix) }.
             each { |t| @client.delete_topic(t) }
-      rescue Fog::Errors::NotFound => e
+      rescue Fog::Errors::NotFound
         puts 'ignoring NotFound during delete_test_resources'
       end
     end
@@ -32,7 +32,7 @@ class TestPubsubRequests < FogIntegrationTest
           map { |s| s.name }.
           select { |s| s.start_with?(subscription_resource_prefix) }.
           each { |s| @client.delete_subscription(s) }
-      rescue Fog::Errors::NotFound => e
+      rescue Fog::Errors::NotFound
         puts 'ignoring NotFound during delete_test_resources'
       end
     end
