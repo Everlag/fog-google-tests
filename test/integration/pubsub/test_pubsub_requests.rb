@@ -12,20 +12,29 @@ class TestPubsubRequests < FogIntegrationTest
   end
 
   def delete_test_resources
+    # We ignore NotFound errors happening during cleanup as they are flaky
     topics_result = @client.list_topics
     unless topics_result.topics.nil?
-      topics_result.topics.
-          map { |t| t.name }.
-          select { |t| t.start_with?(topic_resource_prefix) }.
-          each { |t| @client.delete_topic(t) }
+      begin
+        topics_result.topics.
+            map { |t| t.name }.
+            select { |t| t.start_with?(topic_resource_prefix) }.
+            each { |t| @client.delete_topic(t) }
+      rescue Fog::Errors::NotFound => e
+        puts 'ignoring NotFound during delete_test_resources'
+      end
     end
 
     subscriptions_result = @client.list_subscriptions
     unless subscriptions_result.subscriptions.nil?
-      subscriptions_result.subscriptions.
-        map { |s| s.name }.
-        select { |s| s.start_with?(subscription_resource_prefix) }.
-        each { |s| @client.delete_subscription(s) }
+      begin
+        subscriptions_result.subscriptions.
+          map { |s| s.name }.
+          select { |s| s.start_with?(subscription_resource_prefix) }.
+          each { |s| @client.delete_subscription(s) }
+      rescue Fog::Errors::NotFound => e
+        puts 'ignoring NotFound during delete_test_resources'
+      end
     end
   end
 
