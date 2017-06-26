@@ -19,8 +19,8 @@ class TestPubsubRequests < FogIntegrationTest
             map { |t| t.name }.
             select { |t| t.start_with?(topic_resource_prefix) }.
             each { |t| @client.delete_topic(t) }
-      # We ignore NotFound errors happening during cleanup as they are flaky
-      rescue Fog::Errors::NotFound
+      # We ignore fog errors happening during cleanup as they are flaky
+      rescue Fog::Errors::Error
         puts 'ignoring NotFound during delete_test_resources'
       end
     end
@@ -32,7 +32,7 @@ class TestPubsubRequests < FogIntegrationTest
           map { |s| s.name }.
           select { |s| s.start_with?(subscription_resource_prefix) }.
           each { |s| @client.delete_subscription(s) }
-      rescue Fog::Errors::NotFound
+      rescue Fog::Errors::Error
         puts 'ignoring NotFound during delete_test_resources'
       end
     end
@@ -89,6 +89,10 @@ class TestPubsubRequests < FogIntegrationTest
     3.times do
       result = @client.list_topics
 
+      if result.topics.nil?
+        next
+      end
+
       contained = result.topics.any? {
         |topic| topic.name == name
       }
@@ -136,6 +140,10 @@ class TestPubsubRequests < FogIntegrationTest
     contained  = false
     3.times do
       result = @client.list_subscriptions
+
+      if result.subscriptions.nil?
+        next
+      end
 
       contained = result.subscriptions.any? {
           |sub| sub.name == subscription_name
