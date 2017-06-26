@@ -83,11 +83,19 @@ class TestPubsubRequests < FogIntegrationTest
     # Force a topic to be created just so we have at least 1 to list
     name = new_topic_name
     @client.create_topic(name)
-    result = @client.list_topics
 
-    contained = result.topics.any? {
-      |topic| topic.name == name
-    }
+    # Retry up to a limited amount as list_topics may not be immediately up to date
+    contained = false
+    3.times do
+      result = @client.list_topics
+
+      contained = result.topics.any? {
+        |topic| topic.name == name
+      }
+      if contained
+        break
+      end
+    end
     assert_equal(true, contained, 'known topic not contained within listed topics')
   end
 
@@ -123,12 +131,21 @@ class TestPubsubRequests < FogIntegrationTest
     # Force a subscription to be created just so we have at least 1 to list
     subscription_name = new_subscription_name
     @client.create_subscription(subscription_name , some_topic_name)
-    result = @client.list_subscriptions
 
-    contained = result.subscriptions.any? {
-        |sub| sub.name == subscription_name
-    }
+    # Retry up to a limited amount as list_subscriptions may not be immediately up to date
+    contained  = false
+    3.times do
+      result = @client.list_subscriptions
+
+      contained = result.subscriptions.any? {
+          |sub| sub.name == subscription_name
+      }
+      if contained
+        break
+      end
+    end
     assert_equal(true, contained, 'known subscription not contained within listed subscriptions')
+
   end
 
   def test_delete_subscription
