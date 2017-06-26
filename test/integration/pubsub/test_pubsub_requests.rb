@@ -12,21 +12,21 @@ class TestPubsubRequests < FogIntegrationTest
   end
 
   def delete_test_resources
-    result = @client.list_topics
-    unless result.topics.nil?
-      result.topics.
+    topics_result = @client.list_topics
+    unless topics_result.topics.nil?
+      topics_result.topics.
           map { |t| t.name }.
           select { |t| t.start_with?(topic_resource_prefix) }.
           each { |t| @client.delete_topic(t) }
     end
 
-    # subscriptions = @client.list_subscriptions[:body]["subscriptions"]
-    # unless subscriptions.nil?
-    #   subscriptions.
-    #     map { |s| s["name"] }.
-    #     select { |s| s.start_with?(subscription_resource_prefix) }.
-    #     each { |s| @client.delete_subscription(s) }
-    # end
+    subscriptions_result = @client.list_subscriptions
+    unless subscriptions_result.subscriptions.nil?
+      subscriptions_result.subscriptions.
+        map { |s| s.name }.
+        select { |s| s.start_with?(subscription_resource_prefix) }.
+        each { |s| @client.delete_subscription(s) }
+    end
   end
 
   def topic_resource_prefix
