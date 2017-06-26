@@ -124,14 +124,13 @@ class TestPubsubRequests < FogIntegrationTest
     assert_equal(true, contained, 'known subscription not contained within listed subscriptions')
   end
 
-  # def test_delete_subscription
-  #   subscription_to_delete = new_subscription_name
-  #   @client.create_subscription(subscription_to_delete, some_topic_name)
-  #
-  #   result = @client.delete_subscription(subscription_to_delete)
-  #   assert_equal(200, result.status, "request should be successful")
-  # end
-  #
+  def test_delete_subscription
+    subscription_to_delete = new_subscription_name
+    @client.create_subscription(subscription_to_delete, some_topic_name)
+
+    result = @client.delete_subscription(subscription_to_delete)
+  end
+
   # def test_pull_subscription
   #   subscription = new_subscription_name
   #   @client.create_subscription(subscription, some_topic_name)
