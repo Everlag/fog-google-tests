@@ -145,14 +145,14 @@ class TestPubsubRequests < FogIntegrationTest
     assert_equal(true, contained, 'sent messsage not contained within pulled responses')
   end
 
-  # def test_acknowledge_subscription
-  #   subscription = new_subscription_name
-  #   @client.create_subscription(subscription, some_topic_name)
-  #   @client.publish_topic(some_topic_name, [:data => Base64.strict_encode64("some message")])
-  #   pull_result = @client.pull_subscription(subscription)
-  #
-  #   result = @client.acknowledge_subscription(subscription, pull_result[:body]["receivedMessages"][0]["ackId"])
-  #
-  #   assert_equal(200, result.status, "request should be successful")
-  # end
+  def test_acknowledge_subscription
+    subscription_name = new_subscription_name
+    @client.create_subscription(subscription_name, some_topic_name)
+    @client.publish_topic(some_topic_name, [:data => Base64.strict_encode64("some message")])
+    pull_result = @client.pull_subscription(subscription_name)
+    assert_operator(pull_result.received_messages.length, :>, 0)
+
+    @client.acknowledge_subscription(subscription_name,
+                                              pull_result.received_messages[0].ack_id)
+  end
 end
