@@ -8,7 +8,7 @@ class TestStorageRequests < FogIntegrationTest
     @client = Fog::Storage::Google.new
     # Ensure any resources we create with test prefixes are removed
     Minitest.after_run do
-      delete_test_resources
+      # delete_test_resources
     end
   end
 
@@ -47,6 +47,13 @@ class TestStorageRequests < FogIntegrationTest
     "#{bucket_prefix}-#{SecureRandom.uuid}"
   end
 
+  def some_bucket_name
+    # create lazily to speed tests up
+    @some_topic ||= new_bucket_name.tap do |t|
+      @client.put_bucket(t)
+    end
+  end
+
   def test_put_bucket
     sleep(1)
 
@@ -58,12 +65,8 @@ class TestStorageRequests < FogIntegrationTest
   def test_get_bucket
     sleep(1)
 
-    # Create a new bucket to grab it
-    bucket_name = new_bucket_name
-    @client.put_bucket(bucket_name)
-
-    bucket = @client.get_bucket(bucket_name)
-    assert_equal(bucket.name, bucket_name)
+    bucket = @client.get_bucket(some_bucket_name)
+    assert_equal(bucket.name, some_bucket_name)
   end
 
   def test_delete_bucket
