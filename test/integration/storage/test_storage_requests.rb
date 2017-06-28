@@ -9,13 +9,11 @@ class TestStorageRequests < FogIntegrationTest
     @client = Fog::Storage::Google.new
     # Ensure any resources we create with test prefixes are removed
     Minitest.after_run do
-      # delete_test_resources
+      delete_test_resources
     end
   end
 
   def delete_test_resources
-    puts "a temp file name is #{some_temp_file_name}"
-
     unless @some_temp_file.nil?
       @some_temp_file.unlink
     end
@@ -28,12 +26,18 @@ class TestStorageRequests < FogIntegrationTest
             map(&:name).
             select { |t| t.start_with?(bucket_prefix) }.
             each { |t|
+              object_result = @client.list_objects(t)
+              unless object_result.items.nil?
+                object_result.items.each {|object| @client.delete_object(t, object.name) }
+              end
+
               begin
               sleep(1.5)
               @client.delete_bucket(t)
               # Given that bucket operations are specifically rate-limited, we handle that
               # by waiting a significant amount of time and trying.
               rescue Google::Apis::RateLimitError
+                puts "encountered rate limit, backing off"
                 sleep(10)
                 @client.delete_bucket(t)
               end
@@ -88,75 +92,75 @@ class TestStorageRequests < FogIntegrationTest
     @some_temp_file.path
   end
 
-  # def test_put_bucket
-  #   sleep(1)
-  #
-  #   bucket_name = new_bucket_name
-  #   bucket = @client.put_bucket(bucket_name)
-  #   assert_equal(bucket.name, bucket_name)
-  # end
-  #
-  # def test_get_bucket
-  #   sleep(1)
-  #
-  #   bucket = @client.get_bucket(some_bucket_name)
-  #   assert_equal(bucket.name, some_bucket_name)
-  # end
-  #
-  # def test_delete_bucket
-  #   sleep(1)
-  #
-  #   # Create a new bucket to delete it
-  #   bucket_to_delete = new_bucket_name
-  #   @client.put_bucket(bucket_to_delete)
-  #
-  #   @client.delete_bucket(bucket_to_delete)
-  #
-  #   assert_raises(Google::Apis::ClientError) do
-  #       @client.get_bucket(bucket_to_delete)
-  #   end
-  # end
-  #
-  # def test_list_buckets
-  #   sleep(1)
-  #
-  #   # Create a new bucket to ensure at least one exists to find
-  #   bucket_name = new_bucket_name
-  #   @client.put_bucket(bucket_name)
-  #
-  #   result = @client.list_buckets
-  #   if result.items.nil?
-  #     raise StandardError.new("no buckets found")
-  #   end
-  #
-  #   contained = result.items.any? { |bucket| bucket.name == bucket_name }
-  #   assert_equal(true, contained, "expected bucket not present")
-  # end
-  #
-  # def test_put_object
-  #   sleep(1)
-  #
-  #   @client.put_object(some_bucket_name, new_object_name, some_temp_file_name)
-  # end
-  #
-  # def test_get_object
-  #   sleep(1)
-  #
-  #   content = @client.get_object(some_bucket_name, some_object_name, some_temp_file_name)
-  #   assert_equal(temp_file_content, content)
-  # end
-  #
-  # def test_delete_object
-  #   sleep(1)
-  #
-  #   object_name = new_object_name
-  #   @client.put_object(some_bucket_name, object_name, some_temp_file_name)
-  #   @client.delete_object(some_bucket_name, object_name)
-  #
-  #   assert_raises(Google::Apis::ClientError) do
-  #     @client.get_object(some_bucket_name, object_name)
-  #   end
-  # end
+  def test_put_bucket
+    sleep(1)
+
+    bucket_name = new_bucket_name
+    bucket = @client.put_bucket(bucket_name)
+    assert_equal(bucket.name, bucket_name)
+  end
+
+  def test_get_bucket
+    sleep(1)
+
+    bucket = @client.get_bucket(some_bucket_name)
+    assert_equal(bucket.name, some_bucket_name)
+  end
+
+  def test_delete_bucket
+    sleep(1)
+
+    # Create a new bucket to delete it
+    bucket_to_delete = new_bucket_name
+    @client.put_bucket(bucket_to_delete)
+
+    @client.delete_bucket(bucket_to_delete)
+
+    assert_raises(Google::Apis::ClientError) do
+        @client.get_bucket(bucket_to_delete)
+    end
+  end
+
+  def test_list_buckets
+    sleep(1)
+
+    # Create a new bucket to ensure at least one exists to find
+    bucket_name = new_bucket_name
+    @client.put_bucket(bucket_name)
+
+    result = @client.list_buckets
+    if result.items.nil?
+      raise StandardError.new("no buckets found")
+    end
+
+    contained = result.items.any? { |bucket| bucket.name == bucket_name }
+    assert_equal(true, contained, "expected bucket not present")
+  end
+
+  def test_put_object
+    sleep(1)
+
+    @client.put_object(some_bucket_name, new_object_name, some_temp_file_name)
+  end
+
+  def test_get_object
+    sleep(1)
+
+    content = @client.get_object(some_bucket_name, some_object_name, some_temp_file_name)
+    assert_equal(temp_file_content, content)
+  end
+
+  def test_delete_object
+    sleep(1)
+
+    object_name = new_object_name
+    @client.put_object(some_bucket_name, object_name, some_temp_file_name)
+    @client.delete_object(some_bucket_name, object_name)
+
+    assert_raises(Google::Apis::ClientError) do
+      @client.get_object(some_bucket_name, object_name)
+    end
+  end
 
   def test_list_objects
     sleep(1)
