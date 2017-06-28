@@ -33,11 +33,15 @@ class TestStorageRequests < FogIntegrationTest
     assert_equal(bucket.name, bucket_name)
   end
 
-  # def test_delete_bucket
-  #   # Create a new bucket to delete it
-  #   bucket_to_delete = new_bucket_name
-  #   @client.put_bucket(bucket_to_delete)
-  #
-  #   @client.delete_bucket(bucket_to_delete)
-  # end
+  def test_delete_bucket
+    # Create a new bucket to delete it
+    bucket_to_delete = new_bucket_name
+    @client.put_bucket(bucket_to_delete)
+
+    @client.delete_bucket(bucket_to_delete)
+
+    assert_raises(Google::Apis::ClientError) do
+        @client.get_bucket(bucket_to_delete)
+    end
+  end
 end
