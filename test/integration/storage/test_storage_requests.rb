@@ -23,25 +23,25 @@ class TestStorageRequests < FogIntegrationTest
     unless buckets_result.items.nil?
       begin
         buckets_result.items.
-            map(&:name).
-            select { |t| t.start_with?(bucket_prefix) }.
-            each { |t|
-              object_result = @client.list_objects(t)
-              unless object_result.items.nil?
-                object_result.items.each {|object| @client.delete_object(t, object.name) }
-              end
+          map(&:name).
+          select { |t| t.start_with?(bucket_prefix) }.
+          each do |t|
+          object_result = @client.list_objects(t)
+          unless object_result.items.nil?
+            object_result.items.each { |object| @client.delete_object(t, object.name) }
+          end
 
-              begin
-              sleep(1.5)
-              @client.delete_bucket(t)
-              # Given that bucket operations are specifically rate-limited, we handle that
-              # by waiting a significant amount of time and trying.
-              rescue Google::Apis::RateLimitError
-                puts "encountered rate limit, backing off"
-                sleep(10)
-                @client.delete_bucket(t)
-              end
-              }
+          begin
+            sleep(1.5)
+            @client.delete_bucket(t)
+            # Given that bucket operations are specifically rate-limited, we handle that
+            # by waiting a significant amount of time and trying.
+          rescue Google::Apis::RateLimitError
+            puts "encountered rate limit, backing off"
+            sleep(10)
+            @client.delete_bucket(t)
+          end
+        end
       # We ignore errors here as they are flaky due to the delay in list operations
       # representing our operations.
       rescue Google::Apis::Error
@@ -117,7 +117,7 @@ class TestStorageRequests < FogIntegrationTest
     @client.delete_bucket(bucket_to_delete)
 
     assert_raises(Google::Apis::ClientError) do
-        @client.get_bucket(bucket_to_delete)
+      @client.get_bucket(bucket_to_delete)
     end
   end
 
@@ -172,8 +172,7 @@ class TestStorageRequests < FogIntegrationTest
       raise StandardError.new("no objects found")
     end
 
-    contained = result.items.any? { |object| object.name == expected_object}
+    contained = result.items.any? { |object| object.name == expected_object }
     assert_equal(true, contained, "expected object not present")
   end
-
 end
