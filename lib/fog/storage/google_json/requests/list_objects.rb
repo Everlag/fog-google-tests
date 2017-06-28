@@ -19,24 +19,8 @@ module Fog
         # @option options [Boolean] :versions If true, lists all versions of an
         #   object as distinct results (defaults to False)
         def list_objects(bucket, options = {})
-          api_method = @storage_json.objects.list
-          parameters = {
-            "bucket" => bucket
-          }
-
-          # Optional parameters
-          {
-            :delimiter   => "delimiter",
-            :max_results => "maxResults",
-            :page_token  => "pageToken",
-            :prefix      => "prefix",
-            :projection  => "projection",
-            :versions    => "versions"
-          }.each do |k, v|
-            parameters[v] = options[k] unless options[k].nil?
-          end
-
-          request(api_method, parameters)
+          # TODO: handle options
+          @storage_json.list_objects(bucket)
         end
       end
 

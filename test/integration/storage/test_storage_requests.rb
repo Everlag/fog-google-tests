@@ -69,6 +69,13 @@ class TestStorageRequests < FogIntegrationTest
     end
   end
 
+  def some_object_name
+    # create lazily to speed tests up
+    @some_object ||= new_object_name.tap do |t|
+      @client.put_object(some_bucket_name, t, some_temp_file_name)
+    end
+  end
+
   def temp_file_content
     "hello world"
   end
@@ -119,7 +126,7 @@ class TestStorageRequests < FogIntegrationTest
   #
   #   result = @client.list_buckets
   #   if result.items.nil?
-  #     raise StandardError("no buckets found")
+  #     raise StandardError.new("no buckets found")
   #   end
   #
   #   contained = result.items.any? { |bucket| bucket.name == bucket_name }
@@ -135,22 +142,34 @@ class TestStorageRequests < FogIntegrationTest
   # def test_get_object
   #   sleep(1)
   #
-  #   object_name = new_object_name
-  #   @client.put_object(some_bucket_name, object_name, some_temp_file_name)
-  #   content = @client.get_object(some_bucket_name, object_name, some_temp_file_name)
+  #   content = @client.get_object(some_bucket_name, some_object_name, some_temp_file_name)
   #   assert_equal(temp_file_content, content)
   # end
+  #
+  # def test_delete_object
+  #   sleep(1)
+  #
+  #   object_name = new_object_name
+  #   @client.put_object(some_bucket_name, object_name, some_temp_file_name)
+  #   @client.delete_object(some_bucket_name, object_name)
+  #
+  #   assert_raises(Google::Apis::ClientError) do
+  #     @client.get_object(some_bucket_name, object_name)
+  #   end
+  # end
 
-  def test_delete_object
+  def test_list_objects
     sleep(1)
 
-    object_name = new_object_name
-    @client.put_object(some_bucket_name, object_name, some_temp_file_name)
-    @client.delete_object(some_bucket_name, object_name)
+    expected_object = some_object_name
 
-    assert_raises(Google::Apis::ClientError) do
-      @client.get_object(some_bucket_name, object_name)
+    result = @client.list_objects(some_bucket_name)
+    if result.items.nil?
+      raise StandardError.new("no objects found")
     end
+
+    contained = result.items.any? { |object| object.name == expected_object}
+    assert_equal(true, contained, "expected object not present")
   end
 
 end
