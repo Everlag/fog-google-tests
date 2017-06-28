@@ -23,4 +23,21 @@ class TestStorageRequests < FogIntegrationTest
   def test_put_bucket
     @client.put_bucket(new_bucket_name)
   end
+
+  def test_get_bucket
+    # Create a new bucket to grab it
+    bucket_name = new_bucket_name
+    @client.put_bucket(bucket_name)
+
+    bucket = @client.get_bucket(bucket_name)
+    assert_equal(bucket.name, bucket_name)
+  end
+
+  # def test_delete_bucket
+  #   # Create a new bucket to delete it
+  #   bucket_to_delete = new_bucket_name
+  #   @client.put_bucket(bucket_to_delete)
+  #
+  #   @client.delete_bucket(bucket_to_delete)
+  # end
 end

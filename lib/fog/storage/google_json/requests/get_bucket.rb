@@ -26,17 +26,10 @@ module Fog
         def get_bucket(bucket_name, options = {})
           raise ArgumentError.new("bucket_name is required") unless bucket_name
 
-          @storage_json.insert_bucket(bucket_name,
+          @storage_json.get_bucket(bucket_name,
                                       :if_metageneration_match => options["ifMetagenerationMatch"],
-                                      :if_metageneration_not_match => options["ifMetagenerationNotMatch"])
-
-          api_method = @storage_json.buckets.get
-          parameters = {
-            "bucket" => bucket_name
-          }
-          parameters.merge! options
-
-          request(api_method, parameters)
+                                      :if_metageneration_not_match => options["ifMetagenerationNotMatch"],
+                                      :projection => options["projection"])
         end
       end
 

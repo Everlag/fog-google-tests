@@ -23,11 +23,10 @@ module Fog
               :location => options["LocationConstraint"]
           )
 
-          puts "bucket names is #{bucket_name}"
-
           @storage_json.insert_bucket(@project, bucket,
                                       :predefined_acl => options["predefinedAcl"],
-                                      :predefined_default_object_acl => options["predefined_default_object_acl"])
+                                      :predefined_default_object_acl => options["predefined_default_object_acl"],
+                                      :projection => "full")
         end
       end
 
