@@ -27,31 +27,18 @@ module Fog
         #              * 'URI'<~String> - URI of group to grant access for
         #           * 'Permission'<~String> - Permission, in [FULL_CONTROL, WRITE, WRITE_ACP, READ, READ_ACP]
         #
-        def get_object_acl(bucket_name, object_name, _options = {})
+        def get_object_acl(bucket_name, object_name, options = {})
           raise ArgumentError.new("bucket_name is required") unless bucket_name
           raise ArgumentError.new("object_name is required") unless object_name
 
-          api_method = @storage_json.object_access_controls.list
-          parameters = {
-            "bucket" => bucket_name,
-            "object" => object_name
-          }
-
-          request(api_method, parameters)
+          @storage_json.list_object_access_controls(bucket_name, object_name,
+                                                    :generation => options["versionId"])
         end
       end
 
       class Mock
         def get_object_acl(bucket_name, object_name)
-          response = Excon::Response.new
-          if acl = data[:acls][:object][bucket_name] && data[:acls][:object][bucket_name][object_name]
-            response.status = 200
-            response.body = acl
-          else
-            response.status = 404
-            raise(Excon::Errors.status_error({ :expects => 200 }, response))
-          end
-          response
+          raise Fog::Errors::MockNotImplemented
         end
       end
     end

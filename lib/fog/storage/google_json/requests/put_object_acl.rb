@@ -16,14 +16,18 @@ module Fog
           raise ArgumentError.new("object_name is required") unless object_name
           raise ArgumentError.new("acl is required") unless acl
 
-          api_method = @storage_json.object_access_controls.insert
-          parameters = {
-            "bucket" => bucket_name,
-            "object" => object_name
-          }
-          body_object = acl
+          acl_update = ::Google::Apis::StorageV1::ObjectAccessControl.new(
+              :entity => acl[:entity],
+              :role => acl[:role],
+          )
 
-          request(api_method, parameters, body_object = body_object)
+          @storage_json.insert_object_access_control(bucket_name, object_name, acl_update)
+        end
+      end
+
+      class Mock
+        def put_object_acl(bucket_name, object_name, acl)
+          raise Fog::Errors::MockNotImplemented
         end
       end
     end

@@ -24,29 +24,19 @@ module Fog
         #     * 'Content-Type'<~String> - MIME type of object
         #     * 'ETag'<~String> - Etag of object
         #     * 'Last-Modified'<~String> - Last modified timestamp for object
-        def head_object(bucket_name, object_name, _options = {})
+        def head_object(bucket_name, object_name, options = {})
           raise ArgumentError.new("bucket_name is required") unless bucket_name
           raise ArgumentError.new("object_name is required") unless object_name
 
-          api_method = @storage_json.objects.get
-          parameters = {
-            "bucket" => bucket_name,
-            "object" => object_name,
-            "projection" => "full"
-          }
-
-          object = request(api_method, parameters)
-          object.headers = object.body
-          object.body = nil
-          object
+          request_options = ::Google::Apis::RequestOptions.default.merge(options)
+          @storage_json.get_object(bucket_name, object_name,
+                                            :options => request_options).to_h
         end
       end
 
       class Mock
         def head_object(bucket_name, object_name, options = {})
-          response = get_object(bucket_name, object_name, options)
-          response.body = nil
-          response
+          raise Fog::Errors::MockNotImplemented
         end
       end
     end

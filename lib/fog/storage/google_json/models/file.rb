@@ -2,25 +2,28 @@ module Fog
   module Storage
     class GoogleJSON
       class File < Fog::Model
-        identity :key, :aliases => %w{Key name}
+        identity :key, :aliases => ["Key", :name]
 
         attribute :acl
         attribute :predefined_acl
-        attribute :cache_control,       :aliases => "cacheControl"
-        attribute :content_disposition, :aliases => "contentDisposition"
-        attribute :content_encoding,    :aliases => "contentEncoding"
-        attribute :content_length,      :aliases => "size", :type => :integer
-        attribute :content_md5,         :aliases => "md5Hash"
-        attribute :content_type,        :aliases => "contentType"
+        attribute :cache_control,       :aliases => ["cacheControl",
+                                                                    :cache_control]
+        attribute :content_disposition, :aliases => ["contentDisposition",
+                                                                    :content_disposition]
+        attribute :content_encoding,    :aliases => ["contentEncoding",
+                                                                    :content_encoding]
+        attribute :content_length,      :aliases => ["size", :size], :type => :integer
+        attribute :content_md5,         :aliases => ["md5Hash", :md5_hash]
+        attribute :content_type,        :aliases => ["contentType", :content_type]
         attribute :crc32c
-        attribute :etag,                :aliases => "etag"
-        attribute :time_created,        :aliases => "timeCreated"
-        attribute :last_modified,       :aliases => "updated"
+        attribute :etag,                :aliases => ["etag", :etag]
+        attribute :time_created,        :aliases => ["timeCreated", :time_created]
+        attribute :last_modified,       :aliases => ["updated", :updated]
         attribute :generation
         attribute :metageneration
-        attribute :metadata
-        attribute :self_link,           :aliases => "selfLink"
-        attribute :media_link,          :aliases => "mediaLink"
+        attribute :metadata,            :aliases => ["metadata", :metadata]
+        attribute :self_link,           :aliases => ["selfLink", :self_link]
+        attribute :media_link,          :aliases => ["mediaLink", :media_link]
         attribute :owner
         attribute :storage_class, :aliases => "storageClass"
 
@@ -121,13 +124,9 @@ module Fog
           options["cacheControl"] = cache_control if cache_control
           options["contentDisposition"] = content_disposition if content_disposition
           options["contentEncoding"] = content_encoding if content_encoding
-          # TODO: Should these hashes be recomputed on changes to file contents?
-          # options["md5Hash"] = content_md5 if content_md5
-          # options["crc32c"] = crc32c if crc32c
           options["metadata"] = metadata
 
-          data = service.put_object(directory.key, key, body, options)
-          merge_attributes(data.headers.reject { |key, _value| %w(contentLength contentType).include?(key) })
+          service.put_object(directory.key, key, body, options)
           self.content_length = Fog::Storage.get_body_size(body)
           self.content_type ||= Fog::Storage.get_content_type(body)
           true

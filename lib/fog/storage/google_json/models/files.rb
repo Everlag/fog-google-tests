@@ -17,7 +17,8 @@ module Fog
         def all(options = {})
           requires :directory
 
-          load(service.list_objects(directory.key, options)[:body]["items"])
+          data = service.list_objects(directory.key, options).to_h[:items] || []
+          load(data)
         end
 
         alias_method :each_file_this_page, :each
@@ -28,10 +29,6 @@ module Fog
             subset = dup.all
 
             subset.each_file_this_page { |f| yield f }
-            while subset.is_truncated
-              subset = subset.all(:marker => subset.last.key)
-              subset.each_file_this_page { |f| yield f }
-            end
 
             self
           end
@@ -39,14 +36,8 @@ module Fog
 
         def get(key, options = {}, &block)
           requires :directory
-          data = service.get_object(directory.key, key, options, &block)
-          file_data = {}
-          data.headers.each do |k, v|
-            file_data[k] = v
-          end
-          file_data.merge!(:body => data.body,
-                           :key  => key)
-          new(file_data)
+          object = service.get_object(directory.key, key, options, &block)
+          new(object)
         rescue Fog::Errors::NotFound
           nil
         end
@@ -59,9 +50,8 @@ module Fog
         def head(key, options = {})
           requires :directory
           data = service.head_object(directory.key, key, options)
-          file_data = data.headers.merge(:key => key)
-          new(file_data)
-        rescue Fog::Errors::NotFound
+          new(data)
+        rescue ::Google::Apis::ClientError
           nil
         end
 
