@@ -17,7 +17,6 @@ class TestStorageRequests < FogIntegrationTest
     puts "a temp file name is #{some_temp_file_name}"
 
     unless @some_temp_file.nil?
-      @some_temp_file.close
       @some_temp_file.unlink
     end
 
@@ -51,8 +50,16 @@ class TestStorageRequests < FogIntegrationTest
     "fog-integration-test"
   end
 
+  def object_prefix
+    "fog-integration-test-object"
+  end
+
   def new_bucket_name
     "#{bucket_prefix}-#{SecureRandom.uuid}"
+  end
+
+  def new_object_name
+    "#{object_prefix}-#{SecureRandom.uuid}"
   end
 
   def some_bucket_name
@@ -69,18 +76,19 @@ class TestStorageRequests < FogIntegrationTest
   def some_temp_file_name
     @some_temp_file ||= Tempfile.new("fog-google-storage").tap do |t|
       t.write(temp_file_content)
+      t.close
     end
     @some_temp_file.path
   end
 
-  def test_put_bucket
-    sleep(1)
-
-    bucket_name = new_bucket_name
-    bucket = @client.put_bucket(bucket_name)
-    assert_equal(bucket.name, bucket_name)
-  end
-
+  # def test_put_bucket
+  #   sleep(1)
+  #
+  #   bucket_name = new_bucket_name
+  #   bucket = @client.put_bucket(bucket_name)
+  #   assert_equal(bucket.name, bucket_name)
+  # end
+  #
   # def test_get_bucket
   #   sleep(1)
   #
@@ -117,11 +125,20 @@ class TestStorageRequests < FogIntegrationTest
   #   contained = result.items.any? { |bucket| bucket.name == bucket_name }
   #   assert_equal(true, contained, "expected bucket not present")
   # end
+  #
+  # def test_put_object
+  #   sleep(1)
+  #
+  #   @client.put_object(some_bucket_name, new_object_name, some_temp_file_name)
+  # end
 
-  def test_put_object
+  def test_get_object
     sleep(1)
 
-    @client.put_object(some_bucket_name, "some_object", some_temp_file_name)
+    object_name = new_object_name
+    @client.put_object(some_bucket_name, object_name, some_temp_file_name)
+    content = @client.get_object(some_bucket_name, object_name, some_temp_file_name)
+    assert_equal(temp_file_content, content)
   end
 
 end

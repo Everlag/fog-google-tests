@@ -35,48 +35,6 @@ module Fog
 
           @storage_json.insert_object(bucket_name, object_config,
                                       :upload_source => data)
-          #
-          # if options["contentType"]
-          #   mime_type = options["contentType"]
-          #   if data.is_a? String
-          #     data = StringIO.new(data)
-          #   end
-          # elsif data.is_a? String
-          #   data = StringIO.new(data)
-          #   mime_type = "text/plain"
-          # elsif data.is_a? ::File
-          #   mime_type = Fog::Storage.parse_data(data)[:headers]["Content-Type"]
-          # end
-          #
-          # media = ::Google::APIClient::UploadIO.new(data, mime_type, object_name)
-          # api_method = @storage_json.objects.insert
-          # parameters = {
-          #   "uploadType" => "multipart",
-          #   "bucket" => bucket_name,
-          #   "name" => object_name
-          # }
-          #
-          # body_object = {
-          #   :contentType => mime_type,
-          #   :contentEncoding => options["contentEncoding"]
-          # }
-          # body_object.merge! options
-          #
-          # acl = []
-          # case options["predefinedAcl"]
-          # when "publicRead"
-          #   acl.push({ "entity" => "allUsers", "role" => "READER" })
-          # when "publicReadWrite"
-          #   acl.push({ "entity" => "allUsers", "role" => "OWNER" })
-          # when "authenticatedRead"
-          #   acl.push({ "entity" => "allAuthenticatedUsers", "role" => "READER" })
-          # end
-          #
-          # unless acl.empty?
-          #   body_object[:acl] = acl
-          # end
-          #
-          # request(api_method, parameters, body_object = body_object, media = media)
         end
       end
 
