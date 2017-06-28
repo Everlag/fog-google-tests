@@ -8,7 +8,34 @@ class TestStorageRequests < FogIntegrationTest
     @client = Fog::Storage::Google.new
     # Ensure any resources we create with test prefixes are removed
     Minitest.after_run do
-      # delete_test_resources
+      delete_test_resources
+    end
+  end
+
+  def delete_test_resources
+    buckets_result = @client.list_buckets
+
+    unless buckets_result.items.nil?
+      begin
+        buckets_result.items.
+            map(&:name).
+            select { |t| t.start_with?(bucket_prefix) }.
+            each { |t|
+              begin
+              sleep(1.5)
+              @client.delete_bucket(t)
+              # Given that bucket operations are specifically rate-limited, we handle that
+              # by waiting a significant amount of time and trying.
+              rescue Google::Apis::RateLimitError
+                sleep(10)
+                @client.delete_bucket(t)
+              end
+              }
+      # We ignore errors here as they are flaky due to the delay in list operations
+      # representing our operations.
+      rescue Google::Apis::Error
+        puts "ignoring Google Api error during delete_test_resources"
+      end
     end
   end
 
@@ -21,10 +48,16 @@ class TestStorageRequests < FogIntegrationTest
   end
 
   def test_put_bucket
-    @client.put_bucket(new_bucket_name)
+    sleep(1)
+
+    bucket_name = new_bucket_name
+    bucket = @client.put_bucket(bucket_name)
+    assert_equal(bucket.name, bucket_name)
   end
 
   def test_get_bucket
+    sleep(1)
+
     # Create a new bucket to grab it
     bucket_name = new_bucket_name
     @client.put_bucket(bucket_name)
@@ -34,6 +67,8 @@ class TestStorageRequests < FogIntegrationTest
   end
 
   def test_delete_bucket
+    sleep(1)
+
     # Create a new bucket to delete it
     bucket_to_delete = new_bucket_name
     @client.put_bucket(bucket_to_delete)
@@ -46,6 +81,8 @@ class TestStorageRequests < FogIntegrationTest
   end
 
   def test_list_buckets
+    sleep(1)
+
     # Create a new bucket to ensure at least one exists to find
     bucket_name = new_bucket_name
     @client.put_bucket(bucket_name)
