@@ -44,4 +44,19 @@ class TestStorageRequests < FogIntegrationTest
         @client.get_bucket(bucket_to_delete)
     end
   end
+
+  def test_list_buckets
+    # Create a new bucket to ensure at least one exists to find
+    bucket_name = new_bucket_name
+    @client.put_bucket(bucket_name)
+
+    result = @client.list_buckets
+    if result.items.nil?
+      raise StandardError("no buckets found")
+    end
+
+    contained = result.items.any? { |bucket| bucket.name == bucket_name }
+    assert_equal(true, contained, "expected bucket not present")
+  end
+
 end

@@ -14,12 +14,7 @@ module Fog
         # https://cloud.google.com/storage/docs/json_api/v1/buckets/list
         # TODO: check if very large lists require working with nextPageToken
         def list_buckets
-          api_method = @storage_json.buckets.list
-          parameters = {
-            "project" => @project
-          }
-
-          request(api_method, parameters)
+          @storage_json.list_buckets(@project)
         end
       end
       class Mock
