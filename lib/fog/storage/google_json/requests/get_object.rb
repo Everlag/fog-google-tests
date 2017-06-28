@@ -1,4 +1,4 @@
-require 'tempfile'
+require "tempfile"
 
 module Fog
   module Storage
@@ -48,7 +48,7 @@ module Fog
       end
 
       class Mock
-        def get_object(bucket_name, object_name, options = {}, &block)
+        def get_object(_bucket_name, _object_name, _options = {})
           raise Fog::Errors::MockNotImplemented
         end
       end

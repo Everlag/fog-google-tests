@@ -17,7 +17,7 @@ module Fog
       end
 
       class Mock
-        def delete_bucket(bucket_name)
+        def delete_bucket(_bucket_name)
           raise Fog::Errors::MockNotImplemented
         end
       end

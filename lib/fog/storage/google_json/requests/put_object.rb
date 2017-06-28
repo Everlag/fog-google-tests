@@ -23,14 +23,13 @@ module Fog
         #   * headers<~Hash>:
         #     * 'ETag'<~String> - etag of new object
         def put_object(bucket_name, object_name, data, options = {})
-
           object_config = ::Google::Apis::StorageV1::Object.new(
-              :name => object_name,
-              :cache_control => options["Cache-Control"],
-              :content_disposition => options["Content-Disposition"],
-              :content_encoding => options["Content-Encoding"],
-              :md5_hash => options["Content-MD5"],
-              :content_type => options["Content-Type"]
+            :name => object_name,
+            :cache_control => options["Cache-Control"],
+            :content_disposition => options["Content-Disposition"],
+            :content_encoding => options["Content-Encoding"],
+            :md5_hash => options["Content-MD5"],
+            :content_type => options["Content-Type"]
           )
 
           @storage_json.insert_object(bucket_name, object_config,
@@ -39,7 +38,7 @@ module Fog
       end
 
       class Mock
-        def put_object(bucket_name, object_name, data, options = {})
+        def put_object(_bucket_name, _object_name, _data, _options = {})
           raise Fog::Errors::MockNotImplemented
         end
       end

@@ -19,8 +19,8 @@ module Fog
         # https://cloud.google.com/storage/docs/json_api/v1/buckets/insert
         def put_bucket(bucket_name, options = {})
           bucket = ::Google::Apis::StorageV1::Bucket.new(
-              :name => bucket_name,
-              :location => options["LocationConstraint"]
+            :name => bucket_name,
+            :location => options["LocationConstraint"]
           )
 
           @storage_json.insert_bucket(@project, bucket,
@@ -31,7 +31,7 @@ module Fog
       end
 
       class Mock
-        def put_bucket(bucket_name, options = {}, _body_options = {})
+        def put_bucket(_bucket_name, _options = {}, _body_options = {})
           raise Fog::Errors::MockNotImplemented
         end
       end

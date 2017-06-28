@@ -27,14 +27,14 @@ module Fog
           raise ArgumentError.new("bucket_name is required") unless bucket_name
 
           @storage_json.get_bucket(bucket_name,
-                                      :if_metageneration_match => options["ifMetagenerationMatch"],
-                                      :if_metageneration_not_match => options["ifMetagenerationNotMatch"],
-                                      :projection => options["projection"])
+                                   :if_metageneration_match => options["ifMetagenerationMatch"],
+                                   :if_metageneration_not_match => options["ifMetagenerationNotMatch"],
+                                   :projection => options["projection"])
         end
       end
 
       class Mock
-        def get_bucket(bucket_name, options = {})
+        def get_bucket(_bucket_name, _options = {})
           raise Fog::Errors::MockNotImplemented
         end
       end
