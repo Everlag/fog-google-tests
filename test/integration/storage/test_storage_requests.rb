@@ -131,14 +131,26 @@ class TestStorageRequests < FogIntegrationTest
   #
   #   @client.put_object(some_bucket_name, new_object_name, some_temp_file_name)
   # end
+  #
+  # def test_get_object
+  #   sleep(1)
+  #
+  #   object_name = new_object_name
+  #   @client.put_object(some_bucket_name, object_name, some_temp_file_name)
+  #   content = @client.get_object(some_bucket_name, object_name, some_temp_file_name)
+  #   assert_equal(temp_file_content, content)
+  # end
 
-  def test_get_object
+  def test_delete_object
     sleep(1)
 
     object_name = new_object_name
     @client.put_object(some_bucket_name, object_name, some_temp_file_name)
-    content = @client.get_object(some_bucket_name, object_name, some_temp_file_name)
-    assert_equal(temp_file_content, content)
+    @client.delete_object(some_bucket_name, object_name)
+
+    assert_raises(Google::Apis::ClientError) do
+      @client.get_object(some_bucket_name, object_name)
+    end
   end
 
 end
