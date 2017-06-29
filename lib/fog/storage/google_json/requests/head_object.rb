@@ -28,25 +28,13 @@ module Fog
           raise ArgumentError.new("bucket_name is required") unless bucket_name
           raise ArgumentError.new("object_name is required") unless object_name
 
-          api_method = @storage_json.objects.get
-          parameters = {
-            "bucket" => bucket_name,
-            "object" => object_name,
-            "projection" => "full"
-          }
-
-          object = request(api_method, parameters)
-          object.headers = object.body
-          object.body = nil
-          object
+          raise Fog::Errors::Error.new('head_object unmplemented agains new api client')
         end
       end
 
       class Mock
         def head_object(bucket_name, object_name, options = {})
-          response = get_object(bucket_name, object_name, options)
-          response.body = nil
-          response
+          raise Fog::Errors::MockNotImplemented
         end
       end
     end
