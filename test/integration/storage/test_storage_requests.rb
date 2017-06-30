@@ -186,8 +186,21 @@ class TestStorageRequests < FogIntegrationTest
   #   contained = result.items.any? { |object| object.name == expected_object }
   #   assert_equal(true, contained, "expected object not present")
   # end
+  #
+  # def test_put_object_acl
+  #   sleep(1)
+  #
+  #   object_name = new_object_name
+  #   @client.put_object(some_bucket_name, object_name, some_temp_file_name)
+  #
+  #   acl = {
+  #       :entity => "allUsers",
+  #       :role => "READER"
+  #   }
+  #   @client.put_object_acl(some_bucket_name, object_name, acl)
+  # end
 
-  def test_put_object_acl
+  def test_get_object_acl
     sleep(1)
 
     object_name = new_object_name
@@ -198,6 +211,15 @@ class TestStorageRequests < FogIntegrationTest
         :role => "READER"
     }
     @client.put_object_acl(some_bucket_name, object_name, acl)
+
+    result = @client.get_object_acl(some_bucket_name, object_name)
+    if result.items.nil?
+      raise StandardError.new("no object access controls found")
+    end
+
+    contained = result.items.any? { |control| control.entity == acl[:entity] &&
+                                              control.role == acl[:role]}
+    assert_equal(true, contained, "expected object access control not present")
   end
 
 end
