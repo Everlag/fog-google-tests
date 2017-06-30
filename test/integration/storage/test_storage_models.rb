@@ -71,6 +71,21 @@ class TestStorageRequests < FogIntegrationTest
   #   directory = @client.directories.get(dir_name)
   #   assert_equal(directory.key, dir_name)
   # end
+
+  def test_directories_destroy
+    sleep(1)
+
+    dir_name = new_bucket_name
+    @client.directories.create(:key => dir_name)
+
+    @client.directories.destroy(dir_name)
+
+    assert_raises(Google::Apis::ClientError) do
+      dir = @client.directories.get(dir_name)
+      puts "I found #{dir.to_yaml}"
+    end
+  end
+
   #
   # def test_directories_all
   #   sleep(1)
@@ -95,11 +110,11 @@ class TestStorageRequests < FogIntegrationTest
   #       :body => some_temp_file_name
   #   )
   # end
-
-  def test_files_get
-    sleep(1)
-
-    content = @client.directories.get(some_bucket_name).files.get(some_object_name)
-    assert_equal(content.key, temp_file_content)
-  end
+  #
+  # def test_files_get
+  #   sleep(1)
+  #
+  #   content = @client.directories.get(some_bucket_name).files.get(some_object_name)
+  #   assert_equal(content.key, temp_file_content)
+  # end
 end
