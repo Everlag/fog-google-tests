@@ -43,6 +43,7 @@ module Fog
           content = buf.read
           buf.unlink
 
+          # TODO: return metadata as well as content
           content
         end
       end

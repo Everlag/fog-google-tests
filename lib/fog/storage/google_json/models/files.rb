@@ -40,13 +40,7 @@ module Fog
         def get(key, options = {}, &block)
           requires :directory
           data = service.get_object(directory.key, key, options, &block)
-          file_data = {}
-          data.headers.each do |k, v|
-            file_data[k] = v
-          end
-          file_data.merge!(:body => data.body,
-                           :key  => key)
-          new(file_data)
+          new(:key => data)
         rescue Fog::Errors::NotFound
           nil
         end

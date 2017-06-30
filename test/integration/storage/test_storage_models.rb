@@ -36,6 +36,13 @@ class TestStorageRequests < FogIntegrationTest
     end
   end
 
+  def some_object_name
+    # create lazily to speed tests up
+    @some_object ||= new_object_name.tap do |t|
+      @client.put_object(some_bucket_name, t, some_temp_file_name)
+    end
+  end
+
   def temp_file_content
     "hello world"
   end
@@ -79,13 +86,20 @@ class TestStorageRequests < FogIntegrationTest
   #     raise StandardError.new("failed to find expected directory")
   #   end
   # end
+  #
+  # def test_files_create
+  #   sleep(1)
+  #
+  #   @client.directories.get(some_bucket_name).files.create(
+  #       :key => new_object_name,
+  #       :body => some_temp_file_name
+  #   )
+  # end
 
-  def test_files_create
+  def test_files_get
     sleep(1)
 
-    @client.directories.get(some_bucket_name).files.create(
-        :key => new_object_name,
-        :body => some_temp_file_name
-    )
+    content = @client.directories.get(some_bucket_name).files.get(some_object_name)
+    assert_equal(content.key, temp_file_content)
   end
 end
