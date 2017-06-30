@@ -14,8 +14,8 @@ module Fog
                                                 :marker     => "marker",
                                                 :max_keys   => "max-keys",
                                                 :prefix     => "prefix")
-          data = service.get_bucket(key, options).body
-          new(:key => data["name"])
+          data = service.get_bucket(key, options).to_h
+          new(:key => data[:name])
         rescue Fog::Errors::NotFound
           nil
         end

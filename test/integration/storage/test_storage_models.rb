@@ -29,11 +29,20 @@ class TestStorageRequests < FogIntegrationTest
     "#{object_prefix}-#{SecureRandom.uuid}"
   end
 
-  def test_directory_put
-    sleep(1)
+  # def test_directories_put
+  #   sleep(1)
+  #
+  #   dir_name = new_directory_name
+  #   directory = @client.directories.create(:key => dir_name)
+  #   assert_equal(directory.key, dir_name)
+  # end
+
+  def test_directories_get
+    # sleep(1)
 
     dir_name = new_directory_name
-    directory = @client.directories.create(:key => dir_name)
+    @client.directories.create(:key => dir_name)
+    directory = @client.directories.get(dir_name)
     assert_equal(directory.key, dir_name)
   end
 end
