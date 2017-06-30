@@ -5,7 +5,8 @@ module Fog
         model Fog::Storage::GoogleJSON::Directory
 
         def all
-          data = service.list_buckets.body["items"] || []
+          data = service.list_buckets.to_h[:items] || []
+          data = data.each { |bucket| bucket[:key] = bucket[:name] }
           load(data)
         end
 

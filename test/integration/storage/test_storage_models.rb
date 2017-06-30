@@ -36,13 +36,28 @@ class TestStorageRequests < FogIntegrationTest
   #   directory = @client.directories.create(:key => dir_name)
   #   assert_equal(directory.key, dir_name)
   # end
+  #
+  # def test_directories_get
+  #   sleep(1)
+  #
+  #   dir_name = new_directory_name
+  #   @client.directories.create(:key => dir_name)
+  #   directory = @client.directories.get(dir_name)
+  #   assert_equal(directory.key, dir_name)
+  # end
 
-  def test_directories_get
-    # sleep(1)
-
+  def test_directories_all
+    sleep(1)
     dir_name = new_directory_name
     @client.directories.create(:key => dir_name)
-    directory = @client.directories.get(dir_name)
-    assert_equal(directory.key, dir_name)
+
+    result = @client.directories.all
+    if result.nil?
+      raise StandardError.new("no directories found")
+    end
+
+    unless result.any? { |directory| directory.key == dir_name }
+      raise StandardError.new("failed to find expected directory")
+    end
   end
 end
