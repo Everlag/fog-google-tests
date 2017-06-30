@@ -27,26 +27,13 @@ module Fog
         def get_bucket_acl(bucket_name)
           raise ArgumentError.new("bucket_name is required") unless bucket_name
 
-          api_method = @storage_json.bucket_access_controls.list
-          parameters = {
-            "bucket" => bucket_name
-          }
-
-          request(api_method, parameters)
+          @storage_json.list_bucket_access_controls(bucket_name)
         end
       end
 
       class Mock
         def get_bucket_acl(bucket_name)
-          response = Excon::Response.new
-          if acl = data[:acls][:bucket][bucket_name]
-            response.status = 200
-            response.body = acl
-          else
-            response.status = 404
-            raise(Excon::Errors.status_error({ :expects => 200 }, response))
-          end
-          response
+          raise Fog::Errors::MockNotImplemented
         end
       end
     end
