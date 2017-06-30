@@ -121,13 +121,9 @@ module Fog
           options["cacheControl"] = cache_control if cache_control
           options["contentDisposition"] = content_disposition if content_disposition
           options["contentEncoding"] = content_encoding if content_encoding
-          # TODO: Should these hashes be recomputed on changes to file contents?
-          # options["md5Hash"] = content_md5 if content_md5
-          # options["crc32c"] = crc32c if crc32c
           options["metadata"] = metadata
 
-          data = service.put_object(directory.key, key, body, options)
-          merge_attributes(data.headers.reject { |key, _value| %w(contentLength contentType).include?(key) })
+          service.put_object(directory.key, key, body, options)
           self.content_length = Fog::Storage.get_body_size(body)
           self.content_type ||= Fog::Storage.get_content_type(body)
           true
