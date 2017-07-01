@@ -114,7 +114,7 @@ class TestStorageRequests < FogIntegrationTest
     sleep(1)
 
     content = @client.directories.get(some_bucket_name).files.get(some_object_name)
-    assert_equal(content.key, temp_file_content)
+    assert_equal(content.body, temp_file_content)
   end
 
   def test_files_destroy
@@ -131,6 +131,17 @@ class TestStorageRequests < FogIntegrationTest
     assert_raises(Google::Apis::ClientError) do
       @client.directories.get(some_bucket_name).files.get(file_name)
     end
+  end
+
+  def test_files_copy
+    sleep(1)
+
+    target_object_name = new_object_name
+    @client.directories.get(some_bucket_name).files.get(some_object_name)
+        .copy(some_bucket_name, target_object_name)
+
+    content = @client.directories.get(some_bucket_name).files.get(target_object_name)
+    assert_equal(content.body, temp_file_content)
   end
 
 end
