@@ -40,7 +40,8 @@ module Fog
         def get(key, options = {}, &block)
           requires :directory
           data = service.get_object(directory.key, key, options, &block)
-          new(:key => data)
+          new(:key => key,
+              :body => data)
         rescue Fog::Errors::NotFound
           nil
         end
