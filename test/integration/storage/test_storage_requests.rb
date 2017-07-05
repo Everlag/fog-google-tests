@@ -162,6 +162,14 @@ class TestStorageRequests < FogIntegrationTest
     end
   end
 
+  def test_head_object
+    sleep(1)
+
+    object = @client.head_object(some_bucket_name, some_object_name)
+    assert_equal(temp_file_content.length, object[:size])
+    assert_equal(some_bucket_name, object[:bucket])
+  end
+
   def test_copy_object
     sleep(1)
 

@@ -85,7 +85,6 @@ class TestStorageRequests < FogIntegrationTest
     end
   end
 
-
   def test_directories_all
     sleep(1)
     dir_name = new_bucket_name
@@ -115,6 +114,14 @@ class TestStorageRequests < FogIntegrationTest
 
     content = @client.directories.get(some_bucket_name).files.get(some_object_name)
     assert_equal(content.body, temp_file_content)
+  end
+
+  def test_files_head
+    sleep(1)
+
+    content = @client.directories.get(some_bucket_name).files.head(some_object_name)
+    assert_equal(content.content_length, temp_file_content.length)
+    assert_equal(content.key, some_object_name)
   end
 
   def test_files_destroy

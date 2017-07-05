@@ -28,8 +28,6 @@ module Fog
         #     * 'Last-Modified'<~String> - Last modified timestamp for object
         #
         def get_object(bucket_name, object_name, options = {}, &_block)
-          # TODO!!: support options as contained within options.header
-
           raise ArgumentError.new("bucket_name is required") unless bucket_name
           raise ArgumentError.new("object_name is required") unless object_name
 

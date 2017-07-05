@@ -54,9 +54,8 @@ module Fog
         def head(key, options = {})
           requires :directory
           data = service.head_object(directory.key, key, options)
-          file_data = data.headers.merge(:key => key)
-          new(file_data)
-        rescue Fog::Errors::NotFound
+          new(data)
+        rescue ::Google::Apis::ClientError
           nil
         end
 
