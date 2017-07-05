@@ -146,8 +146,8 @@ class TestStorageRequests < FogIntegrationTest
   def test_get_object
     sleep(1)
 
-    content = @client.get_object(some_bucket_name, some_object_name)
-    assert_equal(temp_file_content, content)
+    object = @client.get_object(some_bucket_name, some_object_name)
+    assert_equal(temp_file_content, object[:body])
   end
 
   def test_delete_object
@@ -169,8 +169,8 @@ class TestStorageRequests < FogIntegrationTest
 
     @client.copy_object(some_bucket_name, some_object_name,
                         some_bucket_name, target_object_name)
-    content = @client.get_object(some_bucket_name, target_object_name)
-    assert_equal(temp_file_content, content)
+    object = @client.get_object(some_bucket_name, target_object_name)
+    assert_equal(temp_file_content, object[:body])
   end
 
   def test_list_objects

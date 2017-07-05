@@ -37,16 +37,20 @@ module Fog
           # rather than taking a filename to populate. Hence, tempfile.
           buf = Tempfile.new("fog-google-storage-temp")
 
+          # Two requests are necessary, first for metadata, then for content.
+          # google-api-ruby-client doesn't allow fetching both metadata and content
           request_options = ::Google::Apis::RequestOptions.default.merge(options)
+          object = @storage_json.get_object(bucket_name, object_name,
+                                            :options => request_options).to_h
           @storage_json.get_object(bucket_name, object_name,
                                    :download_dest => buf.path,
                                    :options => request_options)
 
-          content = buf.read
+          object[:body] = buf.read
           buf.unlink
 
-          # TODO: return metadata as well as content
-          content
+
+          object
         end
       end
 
