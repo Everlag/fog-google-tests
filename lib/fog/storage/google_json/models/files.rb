@@ -18,7 +18,6 @@ module Fog
           requires :directory
 
           data = service.list_objects(directory.key, options).to_h[:items] || []
-          data = data.each { |object| object[:key] = object[:name] }
           load(data)
         end
 
