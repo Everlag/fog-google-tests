@@ -133,6 +133,25 @@ class TestStorageRequests < FogIntegrationTest
     end
   end
 
+  def test_files_all
+    sleep(1)
+
+    file_name = new_object_name
+    @client.directories.get(some_bucket_name).files.create(
+        :key => file_name,
+        :body => some_temp_file_name
+    )
+
+    result = @client.directories.get(some_bucket_name).files.all
+    if result.nil?
+      raise StandardError.new("no files found")
+    end
+
+    unless result.any? { |file| file.key == file_name  }
+      raise StandardError.new("failed to find expected file")
+    end
+  end
+
   def test_files_copy
     sleep(1)
 
