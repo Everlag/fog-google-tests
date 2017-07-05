@@ -32,7 +32,7 @@ class StorageShared < FogIntegrationTest
           end
 
           begin
-            sleep(1.5)
+            sleep(2)
             @client.delete_bucket(t)
               # Given that bucket operations are specifically rate-limited, we handle that
               # by waiting a significant amount of time and trying.
@@ -69,6 +69,7 @@ class StorageShared < FogIntegrationTest
   def some_bucket_name
     # create lazily to speed tests up
     @some_bucket ||= new_bucket_name.tap do |t|
+      sleep(1.5)
       @client.put_bucket(t)
     end
   end
