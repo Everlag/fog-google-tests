@@ -25,15 +25,12 @@ module Fog
         def put_object(bucket_name, object_name, data, options = {})
           object_config = ::Google::Apis::StorageV1::Object.new(
             :name => object_name,
-            :cache_control => options["Cache-Control"],
-            :content_disposition => options["Content-Disposition"],
-            :content_encoding => options["Content-Encoding"],
-            :md5_hash => options["Content-MD5"],
-            :content_type => options["Content-Type"]
           )
+          request_options = ::Google::Apis::RequestOptions.default.merge(options)
 
           @storage_json.insert_object(bucket_name, object_config,
-                                      :upload_source => data)
+                                      :upload_source => data,
+                                      :options => request_options)
         end
       end
 

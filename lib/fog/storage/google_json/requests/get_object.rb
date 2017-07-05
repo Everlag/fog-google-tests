@@ -27,7 +27,7 @@ module Fog
         #     * 'ETag'<~String> - Etag of object
         #     * 'Last-Modified'<~String> - Last modified timestamp for object
         #
-        def get_object(bucket_name, object_name, _options = {}, &_block)
+        def get_object(bucket_name, object_name, options = {}, &_block)
           # TODO!!: support options as contained within options.header
 
           raise ArgumentError.new("bucket_name is required") unless bucket_name
@@ -37,8 +37,10 @@ module Fog
           # rather than taking a filename to populate. Hence, tempfile.
           buf = Tempfile.new("fog-google-storage-temp")
 
+          request_options = ::Google::Apis::RequestOptions.default.merge(options)
           @storage_json.get_object(bucket_name, object_name,
-                                   :download_dest => buf.path)
+                                   :download_dest => buf.path,
+                                   :options => request_options)
 
           content = buf.read
           buf.unlink

@@ -18,9 +18,9 @@ module Fog
         #   return (defaults to "noAcl")
         # @option options [Boolean] :versions If true, lists all versions of an
         #   object as distinct results (defaults to False)
-        def list_objects(bucket, _options = {})
-          # TODO: handle options
-          @storage_json.list_objects(bucket)
+        def list_objects(bucket, options = {})
+          request_options = ::Google::Apis::RequestOptions.default.merge(options)
+          @storage_json.list_objects(bucket, :options => request_options)
         end
       end
 
