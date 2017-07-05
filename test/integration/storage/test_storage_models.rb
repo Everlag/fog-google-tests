@@ -1,60 +1,10 @@
 require "helpers/integration_test_helper"
-require "integration/pubsub/pubsub_shared"
+require "integration/storage/storage_shared"
 require "securerandom"
 require "base64"
 require "tempfile"
 
-class TestStorageRequests < FogIntegrationTest
-  def setup
-    @client = Fog::Storage::Google.new
-    # Ensure any resources we create with test prefixes are removed
-    Minitest.after_run do
-      # delete_test_resources
-    end
-  end
-
-  def bucket_prefix
-    "fog-integration-test"
-  end
-
-  def object_prefix
-    "fog-integration-test-object"
-  end
-
-  def new_bucket_name
-    "#{bucket_prefix}-#{SecureRandom.uuid}"
-  end
-
-  def new_object_name
-    "#{object_prefix}-#{SecureRandom.uuid}"
-  end
-
-  def some_bucket_name
-    # create lazily to speed tests up
-    @some_bucket ||= new_bucket_name.tap do |t|
-      @client.put_bucket(t)
-    end
-  end
-
-  def some_object_name
-    # create lazily to speed tests up
-    @some_object ||= new_object_name.tap do |t|
-      @client.put_object(some_bucket_name, t, some_temp_file_name)
-    end
-  end
-
-  def temp_file_content
-    "hello world"
-  end
-
-  def some_temp_file_name
-    @some_temp_file ||= Tempfile.new("fog-google-storage").tap do |t|
-      t.write(temp_file_content)
-      t.close
-    end
-    @some_temp_file.path
-  end
-
+class TestStorageRequests < StorageShared
   def test_directories_put
     sleep(1)
 
